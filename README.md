@@ -129,3 +129,6 @@ npm run preview
 Мобильная версия списка:
 
 ![Мобильная версия](docs/screenshots/08-mobile-list.png)
+---
+
+Учебный проект. Первый семестр курса «Fullstack».
