@@ -1,24 +1,15 @@
 import { useState } from 'react';
 import type React from 'react';
 import {
-  Title,
-  Stack,
-  Group,
-  Button,
-  Select,
-  Textarea,
-  NumberInput,
-  Text,
-  Image,
+  Title, Stack, Group, Button, Select, Textarea, NumberInput, Text, Image,
 } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { useNavigate } from 'react-router-dom';
-import type { PoleType, PoleMaterial, PoleCondition } from '../types';
+import { notifications } from '@mantine/notifications'; // <-- Импорт уведомлений
+import type { PoleType, PoleMaterial, PoleCondition } from '../shared/types';
 import {
-  poleTypeLabels,
-  materialLabels,
-  conditionLabels,
-} from '../utils/labels';
+  poleTypeLabels, materialLabels, conditionLabels,
+} from '../shared/utils/labels';
 
 export function PhotoUploadPage() {
   const navigate = useNavigate();
@@ -31,7 +22,9 @@ export function PhotoUploadPage() {
   const [comment, setComment] = useState('');
   const [latitude, setLatitude] = useState<number | ''>('');
   const [longitude, setLongitude] = useState<number | ''>('');
+  
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false); // Состояние загрузки кнопки
 
   const handleNumberChange =
     (setter: React.Dispatch<React.SetStateAction<number | ''>>) =>
@@ -59,20 +52,34 @@ export function PhotoUploadPage() {
     if (!file) next.file = 'Загрузите фотографию';
     if (!poleType) next.poleType = 'Укажите тип опоры';
     if (!material) next.material = 'Укажите материал';
+    
+    // Строгая валидация координат
+    if (latitude !== '' && (latitude < -90 || latitude > 90)) {
+      next.latitude = 'Широта должна быть от -90 до 90';
+    }
+    if (longitude !== '' && (longitude < -180 || longitude > 180)) {
+      next.longitude = 'Долгота должна быть от -180 до 180';
+    }
+
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
-    // В лабораторной работе №5 здесь будет POST /api/photos.
-    console.log('Отправка (мок):', {
-      file: file?.name,
-      poleType,
-      material,
-      condition,
-      comment,
-      latitude: latitude === '' ? undefined : latitude,
-      longitude: longitude === '' ? undefined : longitude,
-    });
-    navigate('/');
+    // Имитация отправки на сервер
+    setIsSubmitting(true);
+    
+    setTimeout(() => {
+      console.log('Отправка (мок):', { file: file?.name, poleType, material, condition, comment, latitude, longitude });
+      
+      // Показываем зеленое уведомление об успехе
+      notifications.show({
+        title: 'Успешно сохранено',
+        message: 'Фотография добавлена в базу данных',
+        color: 'green',
+      });
+
+      setIsSubmitting(false);
+      navigate('/');
+    }, 1000); // Имитация задержки сети 1 сек
   };
 
   return (
@@ -81,9 +88,7 @@ export function PhotoUploadPage() {
 
       <Dropzone
         onDrop={onDrop}
-        onReject={() =>
-          setErrors((e) => ({ ...e, file: 'Недопустимый файл или превышен размер' }))
-        }
+        onReject={() => setErrors((e) => ({ ...e, file: 'Недопустимый файл или превышен размер' }))}
         maxSize={10 * 1024 ** 2}
         accept={IMAGE_MIME_TYPE}
         maxFiles={1}
@@ -95,9 +100,7 @@ export function PhotoUploadPage() {
       </Dropzone>
 
       {errors.file && <Text c="red" size="sm">{errors.file}</Text>}
-      {preview && (
-        <Image src={preview} alt="preview" radius="md" maw={400} />
-      )}
+      {preview && <Image src={preview} alt="preview" radius="md" maw={400} />}
 
       <Select
         label="Тип опоры"
@@ -134,24 +137,30 @@ export function PhotoUploadPage() {
         minRows={2}
       />
 
-      <Group grow>
+      <Group grow align="flex-start">
         <NumberInput
           label="Широта"
           value={latitude}
           onChange={handleNumberChange(setLatitude)}
           decimalScale={6}
+          error={errors.latitude}
         />
         <NumberInput
           label="Долгота"
           value={longitude}
           onChange={handleNumberChange(setLongitude)}
           decimalScale={6}
+          error={errors.longitude}
         />
       </Group>
 
       <Group justify="flex-end">
-        <Button variant="default" onClick={() => navigate(-1)}>Отмена</Button>
-        <Button onClick={onSubmit}>Сохранить</Button>
+        <Button variant="default" onClick={() => navigate(-1)} disabled={isSubmitting}>
+          Отмена
+        </Button>
+        <Button onClick={onSubmit} loading={isSubmitting}>
+          Сохранить
+        </Button>
       </Group>
     </Stack>
   );

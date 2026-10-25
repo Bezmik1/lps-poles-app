@@ -9,9 +9,9 @@ import {
   Card,
   Grid,
 } from '@mantine/core';
-import { mockPhotos } from '../data/mockPhotos';
-import { PoleConditionBadge } from '../components/PoleConditionBadge';
-import { materialLabels, poleTypeLabels } from '../utils/labels';
+import { mockPhotos } from '../shared/data/mockPhotos';
+import { PoleConditionBadge } from '../entities/pole-photo/PoleConditionBadge';
+import { materialLabels, poleTypeLabels } from '../shared/utils/labels';
 
 export function PhotoDetailsPage() {
   const { id } = useParams();

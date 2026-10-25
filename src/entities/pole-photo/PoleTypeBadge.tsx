@@ -1,6 +1,6 @@
 import { Badge } from '@mantine/core';
-import type { PoleType } from '../types';
-import { poleTypeLabels } from '../utils/labels';
+import type { PoleType } from '../../shared/types';
+import { poleTypeLabels } from '../../shared/utils/labels';
 
 export function PoleTypeBadge({ type }: { type: PoleType }) {
   return (

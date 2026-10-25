@@ -1,8 +1,8 @@
 import { Card, Image, Text, Group, Badge, Stack } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import type { PolePhoto } from '../types';
+import type { PolePhoto } from '../../shared/types';
+import { materialLabels, poleTypeLabels } from '../../shared/utils/labels';
 import { PoleConditionBadge } from './PoleConditionBadge';
-import { materialLabels, poleTypeLabels } from '../utils/labels';
 
 export function PolePhotoCard({ photo }: { photo: PolePhoto }) {
   return (

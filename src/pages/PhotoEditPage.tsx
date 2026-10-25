@@ -14,13 +14,9 @@ import {
   Card,
   Grid,
 } from '@mantine/core';
-import { mockPhotos } from '../data/mockPhotos';
-import type { PoleType, PoleMaterial, PoleCondition } from '../types';
-import {
-  poleTypeLabels,
-  materialLabels,
-  conditionLabels,
-} from '../utils/labels';
+import { mockPhotos } from '../shared/data/mockPhotos';
+import type { PoleType, PoleMaterial, PoleCondition } from '../shared/types';
+import { poleTypeLabels, materialLabels, conditionLabels } from '../shared/utils/labels';
 
 export function PhotoEditPage() {
   const { id } = useParams();

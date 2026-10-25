@@ -1,6 +1,6 @@
 import { Badge } from '@mantine/core';
-import type { PoleCondition } from '../types';
-import { conditionLabels, conditionColors } from '../utils/labels';
+import type { PoleCondition } from '../../shared/types';
+import { conditionLabels, conditionColors } from '../../shared/utils/labels';
 
 export function PoleConditionBadge({ condition }: { condition: PoleCondition }) {
   return (
