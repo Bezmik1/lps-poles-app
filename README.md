@@ -24,7 +24,27 @@
 | `/login` | Вход в систему (заглушка) |
 | `/profile` | Профиль пользователя (заглушка) |
 | `*` | Страница 404 |
+## Архитектура Frontend (Упрощенный FSD)
 
+В лабораторной работе №3 была внедрена упрощенная архитектура на основе Feature-Sliced Design (FSD). Код разделен на слои по их назначению:
+
+- `src/app/` — настройка приложения (провайдеры, глобальные стили, роутинг, каркас AppLayout).
+- `src/pages/` — страницы приложения (композиция виджетов и фич).
+- `src/features/` — пользовательские действия (в текущей итерации формы реализованы внутри страниц).
+- `src/entities/pole-photo/` — сущность "Фотография опоры" (карточка, бейджи статусов, типы).
+- `src/shared/` — переиспользуемые ресурсы (типы данных, утилиты, мок-данные).
+
+## Динамический интерфейс и состояния
+
+В рамках лабораторной работы №3 был реализован ряд интерактивных элементов и анимаций:
+- **Симуляция API**: На главной странице список фотографий загружается с искусственной задержкой в 1 секунду (имитация запроса к серверу).
+- **Состояния экрана**: 
+  - *Loading*: во время загрузки отображаются скелетоны (Skeleton).
+  - *Error*: при возникновении ошибки отображается красный Alert с кнопкой повтора.
+  - *Empty*: если поиск не дал результатов, выводится заглушка «Ничего не найдено».
+- **Анимации**: Появление карточек списка анимировано с помощью компонента `Transition`.
+- **Уведомления**: При успешном сохранении формы вылетает Toast-уведомление (зеленая плашка).
+- **Валидация**: В формах добавлена строгая проверка координат (широта от -90 до 90, долгота от -180 до 180).
 ## Модель данных
 
 Основная сущность — запись об обработанной фотографии опоры.
@@ -53,122 +73,68 @@
 
 ## Стек
 
+**Frontend:**
 - React 18 и TypeScript
 - Vite
 - React Router
-- Mantine (библиотека UI-компонентов)
-### Backend
+- Mantine (библиотека UI-компонентов, уведомления)
 
+**Backend:**
 - Python 3.12 + FastAPI
 - PostgreSQL 16
 - SQLAlchemy 2.0
 - Pydantic 2
 ## Структура проекта
 
-```
-src/
-├── components/     переиспользуемые компоненты
-├── pages/          страницы приложения
-├── data/           демонстрационные данные
-├── types/          типы предметной области
-├── utils/          словари подписей и вспомогательные функции
-├── App.tsx         маршрутизация
-└── main.tsx        точка входа и провайдеры
-```
-
+~~~text
+lps-poles-app/
+├── backend/                # Серверная часть
+│   ├── app/
+│   │   ├── main.py         # Точка входа FastAPI
+│   │   ├── config.py       # Настройки из .env
+│   │   ├── database.py     # Подключение к PostgreSQL
+│   │   ├── models/         # Модели SQLAlchemy (User, PolePhoto)
+│   │   ├── schemas/        # Схемы Pydantic (валидация)
+│   │   └── routers/        # CRUD-эндпоинты API
+│   ├── requirements.txt    # Зависимости Python
+│   └── .env.example        # Шаблон переменных окружения
+├── src/                    # Клиентская часть
+│   ├── app/                # Настройка, провайдеры, App.tsx, main.tsx
+│   ├── pages/              # Страницы
+│   ├── entities/           # Сущности (компоненты карточек, бейджи)
+│   ├── shared/             # Общие типы, утилиты, мок-данные
+│   └── index.css           # Глобальные стили
+└── docs/                   # Документация и скриншоты
+~~~
 ## Запуск frontend
 
 Требуется Node.js версии 20 или выше.
 
 Установка зависимостей:
 
-```bash
+~~~bash
 npm install
-```
+~~~
 
 Запуск в режиме разработки:
 
-```bash
+~~~bash
 npm run dev
-```
+~~~
 
 Приложение откроется по адресу http://localhost:5173.
 
 Сборка production-версии и её предпросмотр:
 
-```bash
+~~~bash
 npm run build
 npm run preview
-```
-
-## Скриншоты
-
-Список записей:
-
-![Список записей](docs/screenshots/01-list.png)
-
-Детали записи:
-
-![Детали записи](docs/screenshots/02-details.png)
-
-Загрузка фотографии:
-
-![Загрузка фотографии](docs/screenshots/03-upload.png)
-
-Редактирование классификации:
-
-![Редактирование классификации](docs/screenshots/04-edit.png)
-
-Страница входа:
-
-![Страница входа](docs/screenshots/05-login.png)
-
-Профиль пользователя:
-
-![Профиль пользователя](docs/screenshots/06-profile.png)
-
-Страница 404:
-
-![Страница 404](docs/screenshots/07-not-found.png)
-
-Мобильная версия списка:
-
-![Мобильная версия](docs/screenshots/08-mobile-list.png)
+~~~
 ---
+
 ## Backend
 
 Серверная часть проекта реализована на FastAPI с использованием PostgreSQL и SQLAlchemy 2.0. Она предоставляет REST API для работы с пользователями и записями о фотографиях опор ЛЭП.
-
-### Стек backend
-
-- Python 3.12
-- FastAPI
-- SQLAlchemy 2.0
-- PostgreSQL 16
-- Pydantic 2 (валидация данных)
-- Uvicorn (ASGI-сервер)
-
-### Структура backend
-
-```
-backend/
-├── app/
-│   ├── main.py            точка входа FastAPI
-│   ├── config.py          загрузка настроек из .env
-│   ├── database.py        подключение к PostgreSQL, сессии SQLAlchemy
-│   ├── models/            модели SQLAlchemy (таблицы)
-│   │   ├── user.py
-│   │   └── pole_photo.py
-│   ├── schemas/           схемы Pydantic (валидация запросов и ответов)
-│   │   ├── user.py
-│   │   └── pole_photo.py
-│   └── routers/           маршруты API
-│       ├── users.py
-│       └── pole_photos.py
-├── requirements.txt       зависимости Python
-├── .env.example           шаблон переменных окружения
-└── .env                   реальные переменные (не коммитится)
-```
 
 ### Модель данных
 
@@ -205,62 +171,59 @@ backend/
 - `POST /photos/` — создать запись
 - `PUT /photos/{photo_id}` — обновить запись (только присланные поля)
 - `DELETE /photos/{photo_id}` — удалить запись
-
-Валидация входных данных реализована через Pydantic. Некорректные данные возвращают статус 422 с описанием ошибки; отсутствующие записи — 404; попытка создать дубликат email — 409.
-
 ### Настройка и запуск backend
 
 **1. Установить PostgreSQL** (если ещё не установлен):
 
-```bash
+~~~bash
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 sudo service postgresql start
-```
+~~~
 
 **2. Создать пользователя и базу данных:**
 
-```bash
+~~~bash
 sudo -u postgres psql
-```
+~~~
 
 В консоли psql:
 
-```sql
+~~~sql
 CREATE USER lps_user WITH PASSWORD 'lps_password';
 CREATE DATABASE lps_db OWNER lps_user;
 GRANT ALL PRIVILEGES ON DATABASE lps_db TO lps_user;
 \q
-```
+~~~
 
 **3. Создать виртуальное окружение и установить зависимости:**
 
-```bash
+~~~bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
+~~~
 
 **4. Настроить переменные окружения:**
 
 Скопировать `.env.example` в `.env` и заполнить своим значением `DATABASE_URL`:
 
-```bash
+~~~bash
 cp .env.example .env
-```
+~~~
 
 Формат строки подключения:
 
-```
+~~~text
 DATABASE_URL=postgresql+psycopg2://lps_user:lps_password@localhost:5432/lps_db
-```
+~~~
 
 **5. Запустить сервер:**
 
-```bash
+~~~bash
 uvicorn app.main:app --reload
-```
+~~~
 
 Таблицы создаются автоматически при первом запуске (`Base.metadata.create_all`).
 
@@ -268,26 +231,45 @@ uvicorn app.main:app --reload
 
 Swagger UI доступен по адресу: http://localhost:8000/docs
 
-### Проверка работы API
+---
 
-Через Swagger UI можно:
+## Скриншоты
 
-- создать пользователя (`POST /users/`);
-- создать запись о фотографии (`POST /photos/`);
-- получить список записей (`GET /photos/`);
-- обновить запись (`PUT /photos/{id}`);
-- удалить запись (`DELETE /photos/{id}`);
-- проверить валидацию (например, `confidence > 1` вернёт 422);
-- проверить обработку отсутствующих записей (несуществующий id вернёт 404).
+Список записей:
+![Список записей](docs/screenshots/01-list.png)
 
-Проверить данные в БД можно через psql:
+Детали записи:
+![Детали записи](docs/screenshots/02-details.png)
 
-```bash
-psql -U lps_user -d lps_db -h localhost
-```
+Загрузка фотографии:
+![Загрузка фотографии](docs/screenshots/03-upload.png)
 
-```sql
-SELECT id, email, name FROM users;
-SELECT id, file_name, pole_type, condition FROM pole_photos;
-```
+Редактирование классификации:
+![Редактирование классификации](docs/screenshots/04-edit.png)
+
+Страница входа:
+![Страница входа](docs/screenshots/05-login.png)
+
+Профиль пользователя:
+![Профиль пользователя](docs/screenshots/06-profile.png)
+
+Страница 404:
+![Страница 404](docs/screenshots/07-not-found.png)
+
+Мобильная версия списка:
+![Мобильная версия](docs/screenshots/08-mobile-list.png)
+
+Состояние загрузки (скелетоны):
+![Загрузка](docs/screenshots/09-skeleton.png)
+
+Состояние ошибки:
+![Ошибка](docs/screenshots/10-error.png)
+
+Уведомление об успешном сохранении:
+![Уведомление](docs/screenshots/11-notification.png)
+
+Валидация формы:
+![Валидация](docs/screenshots/12-validation.png)
+
+---
 Учебный проект. Первый семестр курса «Fullstack».
